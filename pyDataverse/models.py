@@ -1131,8 +1131,7 @@ class Dataset(DVObject):
                                 "Attribute {0} not valid for import (dv_up).".format(
                                 field["typeName"]
                                 )
-                            )
-                                
+                            )   
                 else:
                     # TODO: Exception
                     pass
@@ -1275,7 +1274,7 @@ class Dataset(DVObject):
             # dataset
             # Generate first level attributes
             for attr in self.__attr_import_dv_up_datasetVersion_values:
-                if attr in data_dict and data_dict[attr] is not None:
+                if attr in data_dict:
                     data["datasetVersion"][attr] = data_dict[attr]
 
             # citation
@@ -1284,14 +1283,19 @@ class Dataset(DVObject):
 
             # Generate first level attributes
             for attr in self.__attr_import_dv_up_citation_fields_values:
-                if attr in data_dict and data_dict[attr] is not None:
+                if attr in data_dict:
                     v = data_dict[attr]
-                    multiple = isinstance(v, list)
+                    if isinstance(v, list):
+                        multiple = True
+                    else:
+                        multiple = False
                     if attr in self.__attr_dict_dv_up_type_class_primitive:
                         type_class = "primitive"
                     elif attr in self.__attr_dict_dv_up_type_class_compound:
                         type_class = "compound"
-                    elif attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary:
+                    elif (
+                        attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary
+                        ):
                         type_class = "controlledVocabulary"
                     citation["fields"].append(
                         {
@@ -1303,8 +1307,11 @@ class Dataset(DVObject):
                     )
 
             # Generate fields attributes
-            for key, val in self.__attr_import_dv_up_citation_fields_arrays.items():
-                if key in data_dict and data_dict[key] is not None:
+            for (key, 
+                 val,
+             ) in self.__attr_import_dv_up_citation_fields_arrays.items():
+                if key in data_dict:
+                    v = data_dict[key]
                     citation["fields"].append(
                         {
                             "typeName": key,
@@ -1350,35 +1357,45 @@ class Dataset(DVObject):
                 + ["geospatial_displayName"]
             ):
                 if attr in data_dict:
-                    geospatial = {"fields": []}
-                    break
+                    geospatial = {}
+                    if attr != "geospatial_displayName":
+                        geospatial["fields"] = []
+                        break
 
             if "geospatial_displayName" in data_dict:
                 geospatial["displayName"] = data_dict["geospatial_displayName"]
 
-                # Generate first level attributes
-                for attr in self.__attr_import_dv_up_geospatial_fields_values:
-                    if attr in data_dict and data_dict[attr] is not None:
-                        v = data_dict[attr]
-                        multiple = isinstance(v, list)
-                        if attr in self.__attr_dict_dv_up_type_class_primitive:
-                            type_class = "primitive"
-                        elif attr in self.__attr_dict_dv_up_type_class_compound:
-                            type_class = "compound"
-                        elif attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary:
-                            type_class = "controlledVocabulary"
-                        geospatial["fields"].append(
-                            {
-                                "typeName": attr,
-                                "multiple": multiple,
-                                "typeClass": type_class,
-                                "value": v,
-                            }
-                        )
+            # Generate first level attributes
+            for attr in self.__attr_import_dv_up_geospatial_fields_values:
+                if attr in data_dict:
+                    v = data_dict[attr]
+                    if isinstance(v, list):
+                        multiple = True
+                    else:
+                        multiple = False
+                    if attr in self.__attr_dict_dv_up_type_class_primitive:
+                        type_class = "primitive"
+                    elif attr in self.__attr_dict_dv_up_type_class_compound:
+                        type_class = "compound"
+                    elif (
+                        attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary
+                    ):
+                        type_class = "controlledVocabulary"
+                    geospatial["fields"].append(
+                        {
+                            "typeName": attr,
+                            "multiple": multiple,
+                            "typeClass": type_class,
+                            "value": v,
+                        }
+                    )
 
                 # Generate fields attributes
-                for key, val in self.__attr_import_dv_up_geospatial_fields_arrays.items():
-                    if key in data_dict and data_dict[key] is not None:
+                for (
+                    key, 
+                    val,
+                 ) in self.__attr_import_dv_up_geospatial_fields_arrays.items():
+                    if key in data_dict:
                         geospatial["fields"].append(
                             {
                                 "typeName": key,
@@ -1389,11 +1406,10 @@ class Dataset(DVObject):
                         )
 
             # socialscience
-            socialscience = None
             for attr in self.__attr_import_dv_up_socialscience_fields_values + [
                 "socialscience_displayName"
             ]:
-                 if attr in data_dict:
+                if attr in data_dict:
                     socialscience = {}
                     if attr != "socialscience_displayName":
                         socialscience["fields"] = []
@@ -1404,14 +1420,19 @@ class Dataset(DVObject):
 
             # Generate first level attributes
             for attr in self.__attr_import_dv_up_socialscience_fields_values:
-                if attr in data_dict and data_dict[attr] is not None:
+                if attr in data_dict:
                     v = data_dict[attr]
-                    multiple = isinstance(v, list)
+                    if isinstance(v, list):
+                        multiple = True
+                    else: 
+                        multiple = False
                     if attr in self.__attr_dict_dv_up_type_class_primitive:
                         type_class = "primitive"
                     elif attr in self.__attr_dict_dv_up_type_class_compound:
                         type_class = "compound"
-                    elif attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary:
+                    elif attr in (
+                        self.__attr_dict_dv_up_type_class_controlled_vocabulary
+                    ):
                         type_class = "controlledVocabulary"
                     socialscience["fields"].append(
                         {
@@ -1421,9 +1442,6 @@ class Dataset(DVObject):
                             "value": v,
                         }
                     )
-
-
-
             # Generate targetSampleSize attributes
             if "targetSampleSize" in data_dict:
                 target_sample_size = data_dict["targetSampleSize"]
@@ -1517,7 +1535,6 @@ class Dataset(DVObject):
                         journal["fields"] = []
                         break
 
-
             if "journal_displayName" in data_dict:
                 journal["displayName"] = data_dict["journal_displayName"]
 
@@ -1533,7 +1550,9 @@ class Dataset(DVObject):
                         type_class = "primitive"
                     elif attr in self.__attr_dict_dv_up_type_class_compound:
                         type_class = "compound"
-                    elif attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary:
+                    elif (
+                        attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary
+                    ):
                         type_class = "controlledVocabulary"
                     journal["fields"].append(
                         {
@@ -1545,7 +1564,10 @@ class Dataset(DVObject):
                     )
 
             # Generate fields attributes
-            for key, val in self.__attr_import_dv_up_journal_fields_arrays.items():
+            for (
+                key,
+                val,
+             ) in self.__attr_import_dv_up_journal_fields_arrays.items():
                 if key in data_dict:
                     journal["fields"].append(
                         {
@@ -1555,8 +1577,7 @@ class Dataset(DVObject):
                             "value": self.__generate_field_arrays(key, val),
                         }
                     )
-        
-
+            
             # astrophysics
             for attr in (
                 self.__attr_import_dv_up_astrophysics_fields_values
@@ -1568,7 +1589,6 @@ class Dataset(DVObject):
                     if attr != "astrophysics_displayName":
                         astrophysics["fields"] = []
                         break
-
 
             if "astrophysics_displayName" in data_dict:
                 astrophysics["displayName"] = data_dict["astrophysics_displayName"]
@@ -1585,7 +1605,9 @@ class Dataset(DVObject):
                         type_class = "primitive"
                     elif attr in self.__attr_dict_dv_up_type_class_compound:
                         type_class = "compound"
-                    elif attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary:
+                    elif (
+                        attr in self.__attr_dict_dv_up_type_class_controlled_vocabulary
+                    ):
                         type_class = "controlledVocabulary"
                     astrophysics["fields"].append(
                         {
@@ -1597,7 +1619,10 @@ class Dataset(DVObject):
                     )
 
             # Generate fields attributes
-            for key, val in self.__attr_import_dv_up_astrophysics_fields_arrays.items():
+            for (
+                key, 
+                val,
+             ) in self.__attr_import_dv_up_astrophysics_fields_arrays.items():
                 if key in data_dict:
                     astrophysics["fields"].append(
                         {
@@ -1609,7 +1634,6 @@ class Dataset(DVObject):
                     )
 
             data["datasetVersion"]["metadataBlocks"]["citation"] = citation
-            data["datasetVersion"]["metadataBlocks"]["astrophysics"] = astrophysics
             if "socialscience" in locals():
                 data["datasetVersion"]["metadataBlocks"]["socialscience"] = (
                     socialscience
@@ -1617,11 +1641,9 @@ class Dataset(DVObject):
             if "geospatial" in locals():
                 data["datasetVersion"]["metadataBlocks"]["geospatial"] = geospatial
             if "journal" in locals():
-                print("'Journal' matadata added to dataset")
                 data["datasetVersion"]["metadataBlocks"]["journal"] = journal
-            #if "astrophysics" in locals():
-             #   print("'Astrophysics' metadata added to dataset")
-              #  data["datasetVersion"]["metadataBlocks"]["astrophysics"] = astrophysics
+            if "astrophysics" in locals():
+                data["datasetVersion"]["metadataBlocks"]["astrophysics"] = astrophysics
         elif data_format == "dspace":
             data = None
             print("INFO: Not implemented yet.")
